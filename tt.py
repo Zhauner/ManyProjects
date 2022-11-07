@@ -34,7 +34,7 @@ for y in range(len(list_dir)):
     os.rename(f'{list_dir[y]}',f'{path}{list_names[y]}')
     
 print(f.GREEN + '\n\n[!]Папки переименованы!  [OK]')
-#well
+#well3
 input()
 
 
