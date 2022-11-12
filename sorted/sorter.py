@@ -7,7 +7,7 @@ colorama.init()
 
 text = Figlet(font='slant')
 print(fo.MAGENTA + text.renderText('S O R T'))
-p = r'[+]Текущий путь C:\Users\Stas\Desktop\sorted'
+p = f'[+]{os.getcwd()}'
 print(len(p) * '_')
 print(fo.CYAN + p)
 print()
@@ -16,8 +16,8 @@ while True:
     path = input('[+]Path of file: ')
     print(Back.RESET)
 
-    python_path = f'C:\\Users\\Stas\\Desktop\\sorted\\python\\'
-    txt_path = f'C:\\Users\\Stas\\Desktop\\sorted\\txt\\'
+    python_path = f'{os.getcwd()}\\python\\'
+    txt_path = f'{os.getcwd()}\\txt\\'
     if path == '':
         break
 
