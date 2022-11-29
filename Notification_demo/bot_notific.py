@@ -24,7 +24,7 @@ def mainloop():
             print(f.CYAN + 'add, clear, on')
             return mainloop()
         elif command == 'clear':
-            with open('C:\\Users\\Stas\\Desktop\\Notification\\notifications.txt', 'w') as clr:
+            with open('notifications.txt', 'w') as clr:
                 clr.truncate()
                 print(f.GREEN + '[!]File clear!')
             clr.close()
@@ -42,7 +42,7 @@ def add():
         print(f.RED + '[!]Wrong')
         add()
     else:
-        with open('C:\\Users\\Stas\\Desktop\\Notification\\notifications.txt', 'a', encoding='utf-8') as notifications:
+        with open('notifications.txt', 'a', encoding='utf-8') as notifications:
             notifications.write(f"{notific[0].strip()}:00.1{notific[1]}" + '\n')
             notifications.close()
         add()
@@ -52,7 +52,7 @@ def strt():
 
     dcct = {}
 
-    with open('C:\\Users\\Stas\\Desktop\\Notification\\notifications.txt', 'r', encoding='utf-8') as dt:
+    with open('notifications.txt', 'r', encoding='utf-8') as dt:
         for i in dt.readlines():
             keys = i.split(' ')[0] + ' ' + i.split(' ')[1]
             values = i[22:]
