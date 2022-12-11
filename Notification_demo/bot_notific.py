@@ -6,7 +6,7 @@ from colorama import Fore as f
 
 colorama.init()
 
-bot = telebot.TeleBot('5428812113:AAE5FSjM8K_5hbB4hZKDpR42rMMMWVU0bGg')
+bot = telebot.TeleBot('token')
 
 def mainloop():
     print(f.RED)
