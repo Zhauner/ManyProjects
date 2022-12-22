@@ -72,10 +72,10 @@ class AudioAnalyzer:
 
     def load(self, filename):
 
-        time_series, sample_rate = librosa.load(filename)  # getting information from the file
+        time_series, sample_rate = librosa.load(filename, sr=None)  # getting information from the file
 
         # getting a matrix which contains amplitude values according to frequency and time indexes
-        stft = np.abs(librosa.stft(time_series, hop_length=512, n_fft=2048*4))
+        stft = np.abs(librosa.stft(time_series, hop_length=512, n_fft=2048*4)) #512 2048*4
 
         self.spectrogram = librosa.amplitude_to_db(stft, ref=np.max)  # converting the matrix to decibel matrix
 

@@ -1,8 +1,12 @@
 
 import os
+
+
 from AudioAnalyzer import *
 from menuSurface import Menu
 from menuSurface import ScrollMenu
+from menuSurface import MoveMenu
+
 import random
 import colorsys
 
@@ -22,8 +26,11 @@ pygame.init()
 text = pygame.font.SysFont('arial', 20)
 
 menu = Menu(50,20)
+
 track_list = ScrollMenu(f'{os.getcwd()}\\music\\')
 
+menu_alpha_scroll = MoveMenu(360,(51 * len(track_list.get_artists())))
+menu_alpha_tracklist = menu_alpha_scroll.paste_alf()
 infoObject = pygame.display.Info()
 #int(infoObject.current_w/2.2) Изначальная ширина
 screen_w = 900
@@ -126,16 +133,18 @@ for g in tmp_bars:
     bars.append(gr)
 
 menu_surf = pygame.Surface((450,450), pygame.SRCALPHA) #плоскость для меню
-#menu_surf.fill((0,255,0))
-menu_rect = pygame.draw.rect(menu_surf, (204,0,204, 200), (30,2,400,450), 0, 15) #полупрозрачное меню +10
-menu.paste(menu_surf)
+menu_surf.fill((0,255,0))
 
-menu_alpha_tracklist = pygame.Surface((360,408)) # поле для отображения треков
-menu_alpha_tracklist.fill((0,0,0))
+scroll_surface = pygame.Surface((360, 410))#Плоскость скроллинга треков
+#scroll_surface.set_alpha(100)
+
+menu_rect = pygame.draw.rect(menu_surf, (204,0,204, 200), (30,2,400,450), 0, 15) #полупрозрачное меню +10
 
 
 track_lists_field = track_list.create_tracks() # поле трека
 
+
+menu_alpha_tracklist.fill((255,0,0))    # поле для отображения треков (360,408)
 
 hh = 0
 for x in range(len(track_list.get_tracklist())): #Вывод слоев под треки в зависимости от их количества в папке
@@ -145,9 +154,12 @@ for x in range(len(track_list.get_tracklist())): #Вывод слоев под �
     menu_alpha_tracklist.blit(track_lists_field, (0, hh))
     hh += 51
 
+menu.paste(menu_surf)
 
 #pygame.mixer.music.load(filename)
 #pygame.mixer.music.play(0)
+pygame.mixer.music.stop()
+yy = 0 #Расположение плоскости треков
 #pygame.display.update()
 running = True
 while running:
@@ -160,11 +172,34 @@ while running:
     getTicksLastFrame = t
 
     timeCount += deltaTime
-
+    scroll_surface.fill((120,120,40))
     screen.fill(circle_color)
+
+    (x, y) = pygame.mouse.get_pos()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN and x >= 50 and x <= 410 and y >= 50 and y <= 460:
+            if event.button == 4:
+                yy = menu_alpha_scroll.update_move()
+            elif event.button == 5:
+                yy = menu_alpha_scroll.min_update_move()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                analyzer.load(filename)
+                pygame.mixer.music.load(filename)
+                pygame.mixer.music.play(0)
+                polygon_default_color[0] = 100
+            elif event.key == pygame.K_l:
+                pygame.mixer.music.stop()
+                polygon_default_color[0] = 225
+            elif event.key == pygame.K_k:
+                filename = 'music\\kriminalnyj-bit-plohoj-horoshij.mp3'
+                analyzer.load(filename)
+                pygame.mixer.music.load(filename)
+                pygame.mixer.music.play(0)
+
+
 
     for b1 in bars:
         for b in b1:
@@ -219,8 +254,11 @@ while running:
 
     pygame.draw.polygon(screen, poly_color, poly)
     pygame.draw.circle(screen, circle_color, (circleX, circleY), int(radius))
-    screen.blit(menu_surf, (0,30))
-    screen.blit(menu_alpha_tracklist, (50,50))
+
+    screen.blit(menu_surf, (0, 30))
+    scroll_surface.blit(menu_alpha_tracklist, (0, yy))
+    screen.blit(scroll_surface, (50, 50))
+
     pygame.display.flip()
 
 pygame.quit()
