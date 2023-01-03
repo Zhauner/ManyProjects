@@ -2,10 +2,12 @@
 import os
 
 
+
 from AudioAnalyzer import *
 from menuSurface import Menu
 from menuSurface import ScrollMenu
 from menuSurface import MoveMenu
+from menuSurface import Click_surface
 
 import random
 import colorsys
@@ -26,6 +28,8 @@ pygame.init()
 text = pygame.font.SysFont('arial', 20)
 
 menu = Menu(50,20)
+
+click_surface = Click_surface(360, 50)
 
 track_list = ScrollMenu(f'{os.getcwd()}\\music\\')
 
@@ -83,7 +87,6 @@ bars = []
 
 tmp_bars = []
 
-
 length = 0
 
 for group in freq_groups:
@@ -132,13 +135,15 @@ for g in tmp_bars:
 
     bars.append(gr)
 
+rects_list = []
+
 menu_surf = pygame.Surface((450,450), pygame.SRCALPHA) #плоскость для меню
-menu_surf.fill((0,255,0))
+# menu_surf.fill((0,255,0))
 
 scroll_surface = pygame.Surface((360, 410))#Плоскость скроллинга треков
 #scroll_surface.set_alpha(100)
 
-menu_rect = pygame.draw.rect(menu_surf, (204,0,204, 200), (30,2,400,450), 0, 15) #полупрозрачное меню +10
+menu_rect = pygame.draw.rect(menu_surf, (204,0,204, 200), (30,2,400,450), 0, 15)  # полупрозрачное меню +10
 
 
 track_lists_field = track_list.create_tracks() # поле трека
@@ -146,21 +151,29 @@ track_lists_field = track_list.create_tracks() # поле трека
 
 menu_alpha_tracklist.fill((255,0,0))    # поле для отображения треков (360,408)
 
+y_coord = []
+y_coord_num = 50
 hh = 0
+count_of_layers = 0
+count_wheel = 0
 for x in range(len(track_list.get_tracklist())): #Вывод слоев под треки в зависимости от их количества в папке
+
     artists = text.render(track_list.get_tracklist()[x], True, (204,0,204))
     track_lists_field.fill((40,40,40))
     track_lists_field.blit(artists, (0,0))
     menu_alpha_tracklist.blit(track_lists_field, (0, hh))
+    menu_alpha_tracklist.blit(click_surface.draw_click_surafce(), (0, hh))
+    y_coord.append(y_coord_num + hh)
+    count_of_layers += 1
     hh += 51
-
+list_of_layers = click_surface.layers_list(count_of_layers)
 menu.paste(menu_surf)
-
+listeee = [50,101,152,203,254,305,356,407]
 #pygame.mixer.music.load(filename)
 #pygame.mixer.music.play(0)
-pygame.mixer.music.stop()
 yy = 0 #Расположение плоскости треков
 #pygame.display.update()
+print(y_coord)
 running = True
 while running:
 
@@ -179,11 +192,31 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN and x >= 50 and x <= 410 and y >= 50 and y <= 460:
+        elif event.type == pygame.MOUSEBUTTONDOWN and x >= 50 and x <= 410 and y >= 50 and y <= 460 and track_list.return_lenght_string() > 8:
+
             if event.button == 4:
-                yy = menu_alpha_scroll.update_move()
+                if menu_alpha_scroll.height_y < 0:
+                    yy = menu_alpha_scroll.update_move()
+                    count_wheel -= 1
+                else:
+                    menu_alpha_scroll.height_y = 0
+                    yy = 0
+
             elif event.button == 5:
-                yy = menu_alpha_scroll.min_update_move()
+
+                if count_wheel < (len(list_of_layers) - 8):
+                    yy = menu_alpha_scroll.min_update_move()
+                    count_wheel += 1
+
+            elif event.button == 1:
+                it = 0
+                for coord in range(len(y_coord)):
+                    if x >= 50 and x <= 410 and y >= y_coord[coord] and y <= 460:
+                        it = coord
+                print(track_list.get_artists()[it])
+
+
+
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_p:
                 analyzer.load(filename)
@@ -198,6 +231,8 @@ while running:
                 analyzer.load(filename)
                 pygame.mixer.music.load(filename)
                 pygame.mixer.music.play(0)
+
+
 
 
 
@@ -257,8 +292,10 @@ while running:
 
     screen.blit(menu_surf, (0, 30))
     scroll_surface.blit(menu_alpha_tracklist, (0, yy))
+
     screen.blit(scroll_surface, (50, 50))
 
     pygame.display.flip()
+
 
 pygame.quit()
