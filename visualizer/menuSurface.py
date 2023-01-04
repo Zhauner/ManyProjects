@@ -77,11 +77,12 @@ class Click_surface:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.alpha = 0
 
     def draw_click_surafce(self):
         click_surface = pygame.Surface((self.x, self.y))
         click_surface.fill((self._BLUE))
-        click_surface.set_alpha(100)
+        click_surface.set_alpha(self.alpha)
         return click_surface
 
     def layers_list(self, count):
